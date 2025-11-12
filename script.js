@@ -2,6 +2,8 @@ const todoForm = document.getElementById("todoForm");
 const todoInput = document.getElementById("todoInput");
 const todoList = document.getElementById("todoList");
 
+const todos = [];
+
 todoForm.addEventListener("submit", handleSubmit);
 
 // handle form submit (read input, validate, add)
@@ -11,6 +13,7 @@ function handleSubmit(event) {
   if (inputValue === "") {
     return;
   } 
+  todos.push(inputValue);
   renderSingleTodo(inputValue);
 }
 
