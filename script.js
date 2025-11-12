@@ -21,7 +21,12 @@ function handleSubmit(event) {
 // function addTodo(text) { ... }
 
 // render all todos to the page
-// function renderTodos() { ... }
+function renderTodos() {
+    todoList.innerHTML = "";
+    todos.forEach(function(todoText){
+        renderSingleTodo(todoText);
+    })
+}
 
 function renderSingleTodo(text) {
     const li = document.createElement("li");
@@ -30,6 +35,13 @@ function renderSingleTodo(text) {
     todoInput.value = "";
     todoInput.focus();
 }
+
+todoList.addEventListener("click", function(event){
+    const clickedItem = event.target;
+    if(clickedItem.tagName === "LI"){
+        clickedItem.classList.toggle("completed");
+    }
+})
 
 // save todos to localStorage
 // function saveTodos() { ... }
