@@ -15,6 +15,7 @@ function handleSubmit(event) {
   } 
   todos.push(inputValue);
   renderSingleTodo(inputValue);
+  saveTodos();
 }
 
 // add a new todo to our data (state)
@@ -28,12 +29,18 @@ function renderTodos() {
     })
 }
 
+// Rendering UI
 function renderSingleTodo(text) {
     const li = document.createElement("li");
     li.textContent = text;
     todoList.appendChild(li);
     todoInput.value = "";
     todoInput.focus();
+}
+
+// save todos to localStorage
+function saveTodos() {
+    localStorage.setItem("todos", JSON.stringify(todos));
 }
 
 todoList.addEventListener("click", function(event){
@@ -43,11 +50,16 @@ todoList.addEventListener("click", function(event){
     }
 })
 
-// save todos to localStorage
-// function saveTodos() { ... }
-
 // load todos from localStorage on startup
-// function loadTodos() { ... }
+function loadTodos() {
+  const saved = localStorage.getItem("todos")
+if (saved) {
+    const parsed = JSON.parse(saved);
+    todos.push(...parsed);
+    renderTodos();
+}
+}
+loadTodos();
 
 // handle clicks on the list (complete/delete)
 // function handleListClick(event) { ... }
