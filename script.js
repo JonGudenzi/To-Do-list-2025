@@ -6,60 +6,60 @@ const todos = [];
 
 todoForm.addEventListener("submit", handleSubmit);
 
-// handle form submit (read input, validate, add)
 function handleSubmit(event) {
   event.preventDefault();
   const inputValue = todoInput.value.trim();
   if (inputValue === "") {
     return;
-  } 
+  }
+
+  // update state
   todos.push(inputValue);
-  renderSingleTodo(inputValue);
+
+  // save
   saveTodos();
+
+  // update UI
+  renderTodos();
+
+  // clear input
+  todoInput.value = "";
+  todoInput.focus();
 }
 
-// add a new todo to our data (state)
-// function addTodo(text) { ... }
-
-// render all todos to the page
 function renderTodos() {
-    todoList.innerHTML = "";
-    todos.forEach(function(todoText){
-        renderSingleTodo(todoText);
-    })
+  todoList.innerHTML = "";
+  todos.forEach(function (todoText) {
+    renderSingleTodo(todoText);
+  });
 }
 
-// Rendering UI
 function renderSingleTodo(text) {
-    const li = document.createElement("li");
-    li.textContent = text;
-    todoList.appendChild(li);
-    todoInput.value = "";
-    todoInput.focus();
+  const li = document.createElement("li");
+  li.textContent = text;
+  todoList.appendChild(li);
 }
 
 // save todos to localStorage
 function saveTodos() {
-    localStorage.setItem("todos", JSON.stringify(todos));
+  localStorage.setItem("todos", JSON.stringify(todos));
 }
-
-todoList.addEventListener("click", function(event){
-    const clickedItem = event.target;
-    if(clickedItem.tagName === "LI"){
-        clickedItem.classList.toggle("completed");
-    }
-})
 
 // load todos from localStorage on startup
 function loadTodos() {
-  const saved = localStorage.getItem("todos")
-if (saved) {
+  const saved = localStorage.getItem("todos");
+  if (saved) {
     const parsed = JSON.parse(saved);
     todos.push(...parsed);
     renderTodos();
-}
+  }
 }
 loadTodos();
 
-// handle clicks on the list (complete/delete)
-// function handleListClick(event) { ... }
+// click to complete
+todoList.addEventListener("click", function (event) {
+  const clickedItem = event.target;
+  if (clickedItem.tagName === "LI") {
+    clickedItem.classList.toggle("completed");
+  }
+});
