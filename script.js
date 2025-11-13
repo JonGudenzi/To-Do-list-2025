@@ -2,64 +2,95 @@ const todoForm = document.getElementById("todoForm");
 const todoInput = document.getElementById("todoInput");
 const todoList = document.getElementById("todoList");
 
+// STATE (objects, not strings)
 const todos = [];
 
-todoForm.addEventListener("submit", handleSubmit);
-
-function handleSubmit(event) {
+// === SUBMIT HANDLER ===
+todoForm.addEventListener("submit", function (event) {
   event.preventDefault();
-  const inputValue = todoInput.value.trim();
-  if (inputValue === "") {
-    return;
-  }
 
-  // update state
-  todos.push(inputValue);
+  const text = todoInput.value.trim();
+  if (text === "") return;
 
-  // save
+  todos.push({ text: text, done: false });   // OBJECT
   saveTodos();
-
-  // update UI
   renderTodos();
 
-  // clear input
   todoInput.value = "";
   todoInput.focus();
-}
+});
 
+// === RENDER ALL TODOS ===
 function renderTodos() {
   todoList.innerHTML = "";
-  todos.forEach(function (todoText) {
-    renderSingleTodo(todoText);
+
+  todos.forEach(function (todo, index) {
+    renderSingleTodo(todo, index);
   });
 }
 
-function renderSingleTodo(text) {
+// === RENDER ONE TODO ===
+function renderSingleTodo(todo, index) {
   const li = document.createElement("li");
-  li.textContent = text;
+  li.textContent = todo.text;
+
+  // store the index in the DOM
+  li.dataset.index = index;
+
+  // apply completed CSS if needed
+  if (todo.done) {
+    li.classList.add("completed");
+  }
+
+  // delete button
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "X";
+  deleteBtn.classList.add("delete-btn");
+
+  li.appendChild(deleteBtn);
   todoList.appendChild(li);
 }
 
-// save todos to localStorage
+// === SAVE ===
 function saveTodos() {
   localStorage.setItem("todos", JSON.stringify(todos));
 }
 
-// load todos from localStorage on startup
+// === LOAD ON STARTUP ===
 function loadTodos() {
   const saved = localStorage.getItem("todos");
-  if (saved) {
-    const parsed = JSON.parse(saved);
-    todos.push(...parsed);
-    renderTodos();
-  }
+  if (!saved) return;
+
+  const parsed = JSON.parse(saved);
+
+  // copy objects into the todos array
+  parsed.forEach(t => todos.push(t));
+
+  renderTodos();
 }
 loadTodos();
 
-// click to complete
+// === CLICK TO COMPLETE OR DELETE ===
 todoList.addEventListener("click", function (event) {
-  const clickedItem = event.target;
-  if (clickedItem.tagName === "LI") {
-    clickedItem.classList.toggle("completed");
+  const item = event.target;
+
+  // DELETE
+  if (item.classList.contains("delete-btn")) {
+    const li = item.closest("li");
+    const index = Number(li.dataset.index);
+
+    todos.splice(index, 1);
+    saveTodos();
+    renderTodos();
+    return;
+  }
+
+  // COMPLETE
+  if (item.tagName === "LI") {
+    const index = Number(item.dataset.index);
+
+    todos[index].done = !todos[index].done;     // flip boolean
+    saveTodos();
+    renderTodos();
   }
 });
